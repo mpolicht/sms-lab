@@ -1,0 +1,70 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+    "contentVersion": "1.0.0.0",
+    "adminUsername": {
+      "value": "GEN-UNIQUE"
+    },
+    "adminPassword": {
+      "value": "GEN-PASSWORD"
+    },
+    "domainToJoin": {
+      "value": "contoso.com"
+    },
+    "domainUsername": {
+      "value": "GET-PREREQ-adUsername"
+    },
+    "domainPassword": {
+      "reference": "GEN-KEYVAULT-PASSWORD-REFERENCE"
+    },
+    "domainJoinOptions": {
+      "value": 3
+    },
+    "vmNamePrefix": {
+        "value": "sms-svr"
+    },
+    "pipNamePrefix": {
+        "value": "sms-pip"
+    },
+    "nicNamePrefix": {
+        "value": "sms-nic"
+    },
+    "existingVnetName": {
+      "value": "sms-vnet"
+    },
+    "publicIPAddressName": {
+      "value": "svr01-nic0-pip"
+    },
+    "existingSubnetName": {
+      "value": "sms-source-subnet"
+    },
+    "vmSize": {
+      "value": "Standard_D2s_v3"
+    },
+    "imagePublisher": {
+        "value": "MicrosoftWindowsServer"
+    },
+    "imageOffer": {
+        "value": "WindowsServer"
+    },
+    "imageSKU": {
+        "value": "2022-Datacenter"
+    },
+    "vmSize": {
+        "value": "Standard_D2s_v3"
+    },
+    "virtualNetworkName": {
+        "value": "sms-vnet"
+    },
+    "addressPrefix": {
+        "value": "10.0.0.0/16"
+    },
+    "virtualNetworkResourceGroup": {
+        "value": "sms-lab-RG"
+    },
+    "subnet0Name": {
+        "value": "sms-source-subnet"
+    },
+    "subnet0Prefix": {
+        "value": "10.0.0.0/24"
+    }
+}
