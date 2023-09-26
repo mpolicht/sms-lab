@@ -1,0 +1,450 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "adminUsername": {
+      "type": "string",
+      "metadata": {
+        "description": "The name of the administrator account of the Active Directory domain controller VM and domain"
+      }
+    },
+    "adminPassword": {
+      "type": "secureString",
+      "metadata": {
+        "description": "The password for the administrator account of the Active Directory domain controller VM and domain"
+      }
+    },
+    "domainName": {
+      "type": "string",
+      "metadata": {
+        "description": "The FQDN of the Active Directory domain to be created"
+      }
+    },
+    "vmSize": {
+      "type": "string",
+      "defaultValue": "Standard_D2s_v3",
+      "metadata": {
+        "description": "The size of the VM to host the Active Directory domain controller"
+      }
+    },
+    "_artifactsLocation": {
+      "type": "string",
+      "defaultValue": "[deployment().properties.templateLink.uri]",
+      "metadata": {
+        "description": "The location of resources, such as templates and DSC modules, that the template depends on"
+      }
+    },
+    "_artifactsLocationSasToken": {
+      "type": "secureString",
+      "defaultValue": "",
+      "metadata": {
+        "description": "Auto-generated token to access _artifactsLocation. Leave it blank unless you need to provide your own value"
+      }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]",
+      "metadata": {
+        "description": "The location for all resources"
+      }
+    },
+    "adVmName": {
+      "type": "string",
+      "defaultValue": "dc01",
+      "maxLength": 15,
+      "metadata": {
+        "description": "The name of the VM to host the Active Directory domain controller"
+      }
+    },
+    "adVnetName": {
+      "type": "string",
+      "defaultValue": "sms-vnet",
+      "metadata": {
+        "description": "The virtual network name"
+      }
+    },
+    "virtualNetworkAddressRange": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/16",
+      "metadata": {
+        "description": "The virtual network address range"
+      }
+    },
+    "inboundNatRulesName": {
+      "type": "string",
+      "defaultValue": "AllowRdpInbound",
+      "metadata": {
+        "description": "The name of inbound NAT rule"
+      }
+    },
+    "networkInterfaceName": {
+      "type": "string",
+      "defaultValue": "dc01-nic",
+      "metadata": {
+        "description": "The name of the network interface of the VM to host the Active Directory domain controller"
+      }
+    },
+    "privateIPAddress": {
+      "type": "string",
+      "defaultValue": "10.0.0.4",
+      "metadata": {
+        "description": "The private IP address of the network interface of the VM to host the Active Directory domain controller"
+      }
+    },
+    "adSubnetName": {
+      "type": "string",
+      "defaultValue": "ad-subnet",
+      "metadata": {
+        "description": "The name of the subnet to which the VM to host the Active Directory domain controller should be connected"
+      }
+    },
+    "adSubnetRange": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "The range of the subnet to which the VM to host the Active Directory domain controller should be connected"
+      }
+    },
+    "smsSubnetName": {
+      "type": "string",
+      "defaultValue": "sms-source-subnet",
+      "metadata": {
+        "description": "The name of the subnet to which the VM to host domain member servers should be connected"
+      }
+    },
+    "smsSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.1.0/24",
+      "metadata": {
+        "description": "The range of the subnet to which the VM to host domain member servers should be connected"
+      }
+    }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Network/networkInterfaces",
+      "apiVersion": "2022-07-01",
+      "name": "[parameters('networkInterfaceName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "ipConfigurations": [
+          {
+            "name": "ipconfig1",
+            "properties": {
+              "privateIPAllocationMethod": "Static",
+              "privateIPAddress": "[parameters('privateIPAddress')]",
+              "subnet": {
+                "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('adVnetName'), parameters('adSubnetName'))]"
+              }
+            }
+          }
+        ]
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', 'VNet')]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines",
+      "apiVersion": "2022-08-01",
+      "name": "[parameters('adVmName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "hardwareProfile": {
+          "vmSize": "[parameters('vmSize')]"
+        },
+        "osProfile": {
+          "computerName": "[parameters('adVmName')]",
+          "adminUsername": "[parameters('adminUsername')]",
+          "adminPassword": "[parameters('adminPassword')]"
+        },
+        "storageProfile": {
+          "imageReference": {
+            "publisher": "MicrosoftWindowsServer",
+            "offer": "WindowsServer",
+            "sku": "2022-Datacenter",
+            "version": "latest"
+          },
+          "osDisk": {
+            "name": "[format('{0}_OSDisk', parameters('adVmName'))]",
+            "caching": "ReadOnly",
+            "createOption": "FromImage",
+            "managedDisk": {
+              "storageAccountType": "Standard_LRS"
+            }
+          },
+          "dataDisks": [
+            {
+              "name": "[format('{0}_DataDisk', parameters('adVmName'))]",
+              "caching": "ReadWrite",
+              "createOption": "Empty",
+              "diskSizeGB": 20,
+              "managedDisk": {
+                "storageAccountType": "Standard_LRS"
+              },
+              "lun": 0
+            }
+          ]
+        },
+        "networkProfile": {
+          "networkInterfaces": [
+            {
+              "id": "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Network/networkInterfaces', parameters('networkInterfaceName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Compute/virtualMachines/extensions",
+      "apiVersion": "2022-08-01",
+      "name": "[format('{0}/{1}', parameters('adVmName'), 'CreateADForest')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "publisher": "Microsoft.Powershell",
+        "type": "DSC",
+        "typeHandlerVersion": "2.19",
+        "autoUpgradeMinorVersion": true,
+        "settings": {
+          "ModulesUrl": "[uri(parameters('_artifactsLocation'), format('DSC/CreateADPDC.zip{0}', parameters('_artifactsLocationSasToken')))]",
+          "ConfigurationFunction": "CreateADPDC.ps1\\CreateADPDC",
+          "Properties": {
+            "DomainName": "[parameters('domainName')]",
+            "AdminCreds": {
+              "UserName": "[parameters('adminUsername')]",
+              "Password": "PrivateSettingsRef:AdminPassword"
+            }
+          }
+        },
+        "protectedSettings": {
+          "Items": {
+            "AdminPassword": "[parameters('adminPassword')]"
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines', parameters('adVmName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "VNet",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "adVnetName": {
+            "value": "[parameters('adVnetName')]"
+          },
+          "virtualNetworkAddressRange": {
+            "value": "[parameters('virtualNetworkAddressRange')]"
+          },
+          "adSubnetName": {
+            "value": "[parameters('adSubnetName')]"
+          },
+          "adSubnetRange": {
+            "value": "[parameters('adSubnetRange')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "adVnetName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the Virtual Network to Create"
+              }
+            },
+            "virtualNetworkAddressRange": {
+              "type": "string",
+              "metadata": {
+                "description": "The address range of the new VNET in CIDR format"
+              }
+            },
+            "adSubnetName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the subnet created in the new VNET"
+              }
+            },
+            "adSubnetRange": {
+              "type": "string",
+              "metadata": {
+                "description": "The address range of the subnet created in the new VNET"
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "Location for all resources."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2022-07-01",
+              "name": "[parameters('adVnetName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('virtualNetworkAddressRange')]"
+                  ]
+                },
+                "subnets": [
+                  {
+                    "name": "[parameters('adSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('adSubnetRange')]"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      }
+    },
+    {
+      "type": "Microsoft.Resources/deployments",
+      "apiVersion": "2020-10-01",
+      "name": "UpdateVNetDNS",
+      "properties": {
+        "expressionEvaluationOptions": {
+          "scope": "inner"
+        },
+        "mode": "Incremental",
+        "parameters": {
+          "adVnetName": {
+            "value": "[parameters('adVnetName')]"
+          },
+          "virtualNetworkAddressRange": {
+            "value": "[parameters('virtualNetworkAddressRange')]"
+          },
+          "adSubnetName": {
+            "value": "[parameters('adSubnetName')]"
+          },
+          "adSubnetRange": {
+            "value": "[parameters('adSubnetRange')]"
+          },
+          "smsSubnetName": {
+            "value": "[parameters('smsSubnetName')]"
+          },
+          "smsSubnetRange": {
+            "value": "[parameters('smsSubnetRange')]"
+          },
+          "DNSServerAddress": {
+            "value": [
+              "[parameters('privateIPAddress')]"
+            ]
+          },
+          "location": {
+            "value": "[parameters('location')]"
+          }
+        },
+        "template": {
+          "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "adVnetName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the virtual network to update"
+              }
+            },
+            "virtualNetworkAddressRange": {
+              "type": "string",
+              "metadata": {
+                "description": "The address range of the virtual network in CIDR format"
+              }
+            },
+            "adSubnetName": {
+              "type": "string",
+              "metadata": {
+                "description": "The name of the domain controller subnet in the virtual network"
+              }
+            },
+            "adSubnetRange": {
+              "type": "string",
+              "metadata": {
+                "description": "The address range of the domain controller subnet in the virtual network"
+              }
+            },
+            "smsSubnetName": {
+              "type": "string",
+              "defaultValue": "sms-source-subnet",
+              "metadata": {
+                "description": "The name of the domain member servers subnet in the virtual network"
+              }
+            },
+            "smsSubnetPrefix": {
+              "type": "string",
+              "defaultValue": "10.0.1.0/24",
+              "metadata": {
+                "description": "The address range of the domain member servers subnet in the virtual network"
+              }
+            },
+            "DNSServerAddress": {
+              "type": "array",
+              "metadata": {
+                "description": "The IP address(es) of the DNS Server(s) to be used in the virtual network"
+              }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location for all resources."
+              }
+            }
+          },
+          "resources": [
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2022-07-01",
+              "name": "[parameters('adVnetName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('virtualNetworkAddressRange')]"
+                  ]
+                },
+                "dhcpOptions": {
+                  "dnsServers": "[parameters('DNSServerAddress')]"
+                },
+                "subnets": [
+                  {
+                    "name": "[parameters('adSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('adSubnetRange')]"
+                    }
+                  },
+                  {
+                    "name": "[parameters('smsSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('smsSubnetPrefix')]"
+                    }
+                  }
+                ]
+              }
+            }
+          ]
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Compute/virtualMachines/extensions', parameters('adVmName'), 'CreateADForest')]"
+      ]
+    }
+  ]
+}
