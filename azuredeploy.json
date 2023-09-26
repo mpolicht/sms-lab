@@ -682,34 +682,36 @@
             "networkAPIVersion": "2021-02-01"
           },
           "resources": [
-            "type": "Microsoft.Network/virtualNetworks",
-            "apiVersion": "2022-07-01",
-            "name": "[parameters('virtualNetworkName')]",
-            "location": "[parameters('location')]",
-            "properties": {
-              "addressSpace": {
-                "addressPrefixes": [
-                  "[parameters('virtualNetworkAddressRange')]"
-                ]
-              },
-              "dhcpOptions": {
-                "dnsServers": "[parameters('dnsServerAddress')]"
-              },
-              "subnets": [
-                {
-                  "name": "[parameters('adSubnetName')]",
-                  "properties": {
-                    "addressPrefix": "[parameters('adSubnetRange')]"
-                  }
+            {
+              "type": "Microsoft.Network/virtualNetworks",
+              "apiVersion": "2022-07-01",
+              "name": "[parameters('virtualNetworkName')]",
+              "location": "[parameters('location')]",
+              "properties": {
+                "addressSpace": {
+                  "addressPrefixes": [
+                    "[parameters('virtualNetworkAddressRange')]"
+                  ]
                 },
-                {
-                  "name": "[parameters('smsSubnetName')]",
-                  "properties": {
-                    "addressPrefix": "[parameters('smsSubnetRange')]"
+                "dhcpOptions": {
+                  "dnsServers": "[parameters('dnsServerAddress')]"
+                },
+                "subnets": [
+                  {
+                    "name": "[parameters('adSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('adSubnetRange')]"
+                    }
+                  },
+                  {
+                    "name": "[parameters('smsSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('smsSubnetRange')]"
+                    }
                   }
-                }
-              ]
-            }
+                ]
+              }
+            },
             {
               "type": "Microsoft.Network/networkInterfaces",
               "name": "[concat(parameters('nicNamePrefix'), copyindex())]",
