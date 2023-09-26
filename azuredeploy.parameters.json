@@ -3,16 +3,55 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "adminUsername": {
-      "value": "demouser"
+      "value": "smsadmin"
     },
     "adminPassword": {
-      "value": "demo@pass123"
+      "value": "GEN-PASSWORD"
     },
     "domainName": {
-      "value": "adatum.com"
+      "value": "contoso.com"
     },
-    "dnsPrefix": {
-      "value": "sms230923"
+    "vmSize": {
+      "value": "Standard_D2s_v3"
+    },
+    "_artifactsLocation": {
+      "value": "[deployment().properties.templateLink.uri]"
+    },
+    "_artifactsLocationSasToken": {
+      "value": null
+    },
+    "location": {
+      "value": "[resourceGroup().location]"
+    },
+    "adVmName": {
+      "value": "dc01"
+    },
+    "virtualNetworkName": {
+      "value": "sms-vnet"
+    },
+    "virtualNetworkAddressRange": {
+      "value": "10.0.0.0/16"
+    },
+    "inboundNatRulesName": {
+      "value": "AllowRdpInbound"
+    },
+    "networkInterfaceName": {
+      "value": "dc01-nic"
+    },
+    "privateIPAddress": {
+      "value": "10.0.0.4"
+    },
+    "adSubnetName": {
+      "value": "ad-subnet"
+    },
+    "adSubnetRange": {
+      "value": "10.0.0.0/24"
+    },
+    "smsSubnetName": {
+      "value": "sms-source-subnet"
+    },
+    "smsSubnetRange": {
+      "value": "10.0.1.0/24"
     }
   }
 }
