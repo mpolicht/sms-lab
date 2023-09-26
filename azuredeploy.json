@@ -345,7 +345,7 @@
           "smsSubnetRange": {
             "value": "[parameters('smsSubnetRange')]"
           },
-          "DNSServerAddress": {
+          "dnsServerAddress": {
             "value": [
               "[parameters('privateIPAddress')]"
             ]
@@ -396,7 +396,7 @@
                 "description": "The address range of the domain member servers subnet in the virtual network"
               }
             },
-            "DNSServerAddress": {
+            "dnsServerAddress": {
               "type": "array",
               "metadata": {
                 "description": "The IP address(es) of the DNS Server(s) to be used in the virtual network"
@@ -422,7 +422,7 @@
                   ]
                 },
                 "dhcpOptions": {
-                  "dnsServers": "[parameters('DNSServerAddress')]"
+                  "dnsServers": "[parameters('dnsServerAddress')]"
                 },
                 "subnets": [
                   {
@@ -489,6 +489,11 @@
           },
           "smsSubnetRange": {
             "value": "[parameters('smsSubnetRange')]"
+          },
+          "dnsServerAddress": {
+            "value": [
+              "[parameters('privateIPAddress')]"
+            ]
           },
           "location": {
             "value": "[parameters('location')]"
@@ -605,6 +610,13 @@
                 "description": "Virtual network name"
               }
             },
+            "virtualNetworkAddressRange": {
+              "type": "string",
+              "defaultValue": "10.0.0.0/16",
+              "metadata": {
+                "description": "The virtual network address range"
+              }
+            },
             "addressPrefix": {
               "type": "string",
               "defaultValue": "10.0.0.0/16",
@@ -626,7 +638,7 @@
                 "description": "VNet AD subnet name"
               }
             },
-            "adSubnetPrefix": {
+            "adSubnetRange": {
               "type": "string",
               "defaultValue": "10.0.0.0/24",
               "metadata": {
@@ -647,6 +659,13 @@
                 "description": "VNet subnet prefix"
               }
             },
+            "dnsServerAddress": {
+              "type": "string",
+              "defaultValue": "10.0.0.4",
+              "metadata": {
+                "description": "IP address of the DNS server"
+              }
+            },
             "nsgName": {
               "type": "string",
               "defaultValue": "sms-nsg",
@@ -663,6 +682,34 @@
             "networkAPIVersion": "2021-02-01"
           },
           "resources": [
+            "type": "Microsoft.Network/virtualNetworks",
+            "apiVersion": "2022-07-01",
+            "name": "[parameters('virtualNetworkName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+              "addressSpace": {
+                "addressPrefixes": [
+                  "[parameters('virtualNetworkAddressRange')]"
+                ]
+              },
+              "dhcpOptions": {
+                "dnsServers": "[parameters('dnsServerAddress')]"
+              },
+              "subnets": [
+                {
+                  "name": "[parameters('adSubnetName')]",
+                  "properties": {
+                    "addressPrefix": "[parameters('adSubnetRange')]"
+                  }
+                },
+                {
+                  "name": "[parameters('smsSubnetName')]",
+                  "properties": {
+                    "addressPrefix": "[parameters('smsSubnetRange')]"
+                  }
+                }
+              ]
+            }
             {
               "type": "Microsoft.Network/networkInterfaces",
               "name": "[concat(parameters('nicNamePrefix'), copyindex())]",
