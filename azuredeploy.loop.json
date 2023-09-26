@@ -97,7 +97,7 @@
     },
     "vmSize": {
       "type": "string",
-      "defaultValue": "Standard_D2s_v3",
+      "defaultValue": "Standard_B2ms",
       "metadata": {
         "description": "VM size"
       }
@@ -123,16 +123,30 @@
         "description": "Resource group of the VNet"
       }
     },
-    "subnetName": {
+    "adSubnetName": {
+      "type": "string",
+      "defaultValue": "ad-subnet",
+      "metadata": {
+        "description": "VNet AD subnet name"
+      }
+    },
+    "adSubnetPrefix": {
+      "type": "string",
+      "defaultValue": "10.0.0.0/24",
+      "metadata": {
+        "description": "VNet ad subnet prefix"
+      }
+    },
+    "smsSubnetName": {
       "type": "string",
       "defaultValue": "sms-source-subnet",
       "metadata": {
         "description": "VNet subnet name"
       }
     },
-    "subnetPrefix": {
+    "smsSubnetPrefix": {
       "type": "string",
-      "defaultValue": "10.1.0.0/24",
+      "defaultValue": "10.0.1.0/24",
       "metadata": {
         "description": "VNet subnet prefix"
       }
@@ -147,7 +161,7 @@
   },
   "variables": {
     "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('subnetName'))]",
+    "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName'))]",
     "numberOfInstances": 3,
     "computeAPIVersion": "2021-03-01",
     "networkAPIVersion": "2021-02-01"
@@ -163,7 +177,6 @@
         "count": "[variables('numberOfInstances')]"
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/',parameters('virtualNetworkName'))]",
         "[resourceId('Microsoft.Network/networkSecurityGroups/',parameters('nsgName'))]",
         "pipLoop"
       ],
@@ -188,29 +201,8 @@
       }
     },
     {
-      "type": "Microsoft.Network/virtualNetworks",
-      "name": "[parameters('virtualNetworkName')]",
-      "apiVersion": "[variables('networkAPIVersion')]",
-      "location": "[resourceGroup().location]",
-      "properties": {
-        "addressSpace": {
-          "addressPrefixes": [
-            "[parameters('addressPrefix')]"
-          ]
-        },
-        "subnets": [
-          {
-            "name": "[parameters('subnetName')]",
-            "properties": {
-              "addressPrefix": "[parameters('subnetPrefix')]"
-            }
-          }
-        ]
-      }
-    },
-    {
       "type": "Microsoft.Network/publicIpAddresses",
-      "name": "[concat(parameters('[pipNamePrefix'), copyindex())]",
+      "name": "[concat(parameters('pipNamePrefix'), copyindex())]",
       "apiVersion": "[variables('networkApiVersion')]",
       "copy": {
         "name": "pipLoop",
@@ -300,8 +292,12 @@
     {
       "type": "Microsoft.Compute/virtualMachines/extensions",
       "apiVersion": "2021-03-01",
+      "copy": {
+        "name": "vmExtensionLoop",
+        "count": "[variables('numberOfInstances')]"
+      },
       "name": "[format('{0}/{1}', concat(parameters('vmNamePrefix'), copyIndex()), 'joindomain')]",
-      "location": "[parameters('location')]",
+      "location": "[resourceGroup().location]",
       "properties": {
         "publisher": "Microsoft.Compute",
         "type": "JsonADDomainExtension",

@@ -61,10 +61,19 @@
     "virtualNetworkResourceGroup": {
         "value": "sms-lab-RG"
     },
-    "subnet0Name": {
-        "value": "sms-source-subnet"
+    "adSubnetName": {
+      "value": "ad-subnet"
     },
-    "subnet0Prefix": {
-        "value": "10.0.0.0/24"
+    "adSubnetPrefix": {
+      "value": "10.0.0.0/24"
+    },
+    "smsSubnetName": {
+      "value": "sms-source-subnet"
+    },
+    "smsSubnetPrefix": {
+      "value": "10.0.1.0/24"
+    },
+    "nsgName": {
+      "value": "sms-nsg"
     }
 }
