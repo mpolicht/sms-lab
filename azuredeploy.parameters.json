@@ -1,51 +1,18 @@
 {
-  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentParameters.json#",
   "contentVersion": "1.0.0.0",
   "parameters": {
     "adminUsername": {
-      "value": "smsadmin"
+      "value": "demouser"
     },
     "adminPassword": {
-      "value": "GEN-PASSWORD"
+      "value": "demo@pass123"
     },
     "domainName": {
-      "value": null
+      "value": "adatum.com"
     },
     "dnsPrefix": {
-      "value": "GEN-UNIQUE"
-    },
-    "vmSize": {
-      "value": "Standard_D2s_v3"
-    },
-    "_artifactsLocation": {
-      "value": "[deployment().properties.templateLink.uri]"
-    },
-    "_artifactsLocationSasToken": {
-      "value": null
-    },
-    "location": {
-      "value": "[resourceGroup().location]"
-    },
-    "virtualMachineName": {
-      "value": "dc01"
-    },
-    "virtualNetworkName": {
-      "value": "sms-RG-vnet"
-    },
-    "virtualNetworkAddressRange": {
-      "value": "10.0.0.0/16"
-    },
-    "networkInterfaceName": {
-      "value": "dc01-nic"
-    },
-    "privateIPAddress": {
-      "value": "10.0.0.4"
-    },
-    "subnetName": {
-      "value": "ad-subnet"
-    },
-    "subnetRange": {
-      "value": "10.0.0.0/24"
+      "value": "sms230923"
     }
   }
 }
