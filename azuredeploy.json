@@ -722,6 +722,7 @@
                 "count": "[variables('numberOfInstances')]"
               },
               "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName'))]"
                 "[resourceId('Microsoft.Network/networkSecurityGroups/',parameters('nsgName'))]",
                 "pipLoop"
               ],
@@ -868,10 +869,7 @@
             }
           ]
         }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName')), '2022-07-01']"
-      ]
+      }
     }
   ]
 }
