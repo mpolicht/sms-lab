@@ -729,7 +729,7 @@
                 "count": "[variables('numberOfInstances')]"
               },
               "dependsOn": [
-                "UpdateVNetDNS",
+                "[resourceId('Microsoft.Resources/deployments','UpdateVNetDNS')]",
                 "[resourceId('Microsoft.Network/networkSecurityGroups/',parameters('nsgName'))]",
                 "pipLoop"
               ],
