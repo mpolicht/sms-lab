@@ -729,7 +729,7 @@
                 "count": "[variables('numberOfInstances')]"
               },
               "dependsOn": [
-                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName'))]",
+                "UpdateVNetDNS",
                 "[resourceId('Microsoft.Network/networkSecurityGroups/',parameters('nsgName'))]",
                 "pipLoop"
               ],
