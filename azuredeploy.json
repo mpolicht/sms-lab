@@ -464,7 +464,7 @@
             "value": "[parameters('adminPassword')]"
           },
           "domainToJoin": {
-            "value": "[parameters('domainToJoin')]"
+            "value": "[parameters('domainName')]"
           },
           "domainUsername": {
             "value": "[parameters('adminUsername')]"
