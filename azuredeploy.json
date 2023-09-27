@@ -678,13 +678,13 @@
             "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
             "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName'))]",
             "numberOfInstances": 3,
-            "computeAPIVersion": "2021-03-01",
-            "networkAPIVersion": "2021-02-01"
+            "computeAPIVersion": "2022-08-01",
+            "networkAPIVersion": "2022-07-01"
           },
           "resources": [
             {
               "type": "Microsoft.Network/virtualNetworks",
-              "apiVersion": "2022-07-01",
+              "apiVersion": "[variables('networkAPIVersion')]",
               "name": "[parameters('virtualNetworkName')]",
               "location": "[parameters('location')]",
               "properties": {
@@ -870,7 +870,7 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName'))]"
+        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName')), '2022-07-01']"
       ]
     }
   ]
