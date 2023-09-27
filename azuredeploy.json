@@ -879,7 +879,6 @@
       "dependsOn": [
         "[resourceId('Microsoft.Resources/deployments', 'UpdateVNetDNS')]"
       ] 
-     ]
     }
   ]
 }
