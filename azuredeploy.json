@@ -877,8 +877,9 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName'))]"
-      ]
+        "[resourceId('Microsoft.Resources/deployments', 'UpdateVNetDNS')]"
+      ] 
+     ]
     }
   ]
 }
