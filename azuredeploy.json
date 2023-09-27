@@ -660,10 +660,10 @@
               }
             },
             "dnsServerAddress": {
-              "type": "string",
-              "defaultValue": "10.0.0.4",
+              "type": "array",
+              "defaultValue": ["10.0.0.4"],
               "metadata": {
-                "description": "IP address of the DNS server"
+                "description": "The IP address(es) of the DNS Server(s) to be used in the virtual network"
               }
             },
             "nsgName": {
