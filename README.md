@@ -22,7 +22,7 @@ languages:
 
 ![Bicep Version](https://azurequickstartsservice.blob.core.windows.net/badges/application-workloads/active-directory/active-directory-new-domain/BicepVersion.svg)
 
-This template will deploy a new VM (along with a new VNet and Load Balancer) and will configure it as a Domain Controller and create a new forest and domain.
+This template will provision an Azure VM (along with a new virtual network) hosting an Active Directory domain controller in a new single-domain forest, followed by provisioning of two domain member servers into another subnet in the same virtual network.
 
 Click the button below to deploy
 
