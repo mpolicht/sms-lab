@@ -684,7 +684,7 @@
           "variables": {
             "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
             "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName'))]",
-            "numberOfInstances": 3,
+            "numberOfInstances": 2,
             "computeAPIVersion": "2022-08-01",
             "networkAPIVersion": "2022-07-01"
           },
