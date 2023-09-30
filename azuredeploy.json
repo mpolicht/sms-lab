@@ -108,7 +108,7 @@
     },
     "smsSubnetName": {
       "type": "string",
-      "defaultValue": "sms-source-subnet",
+      "defaultValue": "sms-subnet",
       "metadata": {
         "description": "The name of the subnet to which the VM to host domain member servers should be connected"
       }
@@ -384,7 +384,7 @@
             },
             "smsSubnetName": {
               "type": "string",
-              "defaultValue": "sms-source-subnet",
+              "defaultValue": "sms-subnet",
               "metadata": {
                 "description": "The name of the domain member servers subnet in the virtual network"
               }
@@ -647,7 +647,7 @@
             },
             "smsSubnetName": {
               "type": "string",
-              "defaultValue": "sms-source-subnet",
+              "defaultValue": "sms-subnet",
               "metadata": {
                 "description": "VNet subnet name"
               }

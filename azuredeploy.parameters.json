@@ -48,7 +48,7 @@
       "value": "10.0.0.0/24"
     },
     "smsSubnetName": {
-      "value": "sms-source-subnet"
+      "value": "sms-subnet"
     },
     "smsSubnetRange": {
       "value": "10.0.1.0/24"
