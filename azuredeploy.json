@@ -185,7 +185,7 @@
             "caching": "ReadOnly",
             "createOption": "FromImage",
             "managedDisk": {
-              "storageAccountType": "Standard_LRS"
+              "storageAccountType": "Premium_LRS"
             }
           },
           "dataDisks": [
@@ -195,7 +195,7 @@
               "createOption": "Empty",
               "diskSizeGB": 20,
               "managedDisk": {
-                "storageAccountType": "Standard_LRS"
+                "storageAccountType": "Premium_LRS"
               },
               "lun": 0
             }
@@ -644,7 +644,7 @@
             },
             "vmSize": {
               "type": "string",
-              "defaultValue": "Standard_B2ms",
+              "defaultValue": "Standard_D2s_v3",
               "metadata": {
                 "description": "VM size"
               }
