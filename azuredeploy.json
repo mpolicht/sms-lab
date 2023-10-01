@@ -106,18 +106,32 @@
         "description": "The range of the subnet to which the VM to host the Active Directory domain controller should be connected"
       }
     },
-    "smsSubnetName": {
+    "smsSourceSubnetName": {
       "type": "string",
-      "defaultValue": "sms-subnet",
+      "defaultValue": "sms-source-subnet",
       "metadata": {
-        "description": "The name of the subnet to which the VM to host domain member servers should be connected"
+        "description": "The name of the first subnet to which the VMs to host domain member servers should be connected"
       }
     },
-    "smsSubnetRange": {
+    "smsSourceSubnetRange": {
       "type": "string",
       "defaultValue": "10.0.1.0/24",
       "metadata": {
-        "description": "The range of the subnet to which the VM to host domain member servers should be connected"
+        "description": "The range of the first subnet to which the VMs to host domain member servers should be connected"
+      }
+    },
+    "smsDestinationSubnetName": {
+      "type": "string",
+      "defaultValue": "sms-destination-subnet",
+      "metadata": {
+        "description": "The name of the second subnet to which the VMs to host domain member servers should be connected"
+      }
+    },
+    "smsDestinationSubnetRange": {
+      "type": "string",
+      "defaultValue": "10.0.2.0/24",
+      "metadata": {
+        "description": "The range of the second subnet to which the VMs to host domain member servers should be connected"
       }
     }
   },
@@ -339,11 +353,17 @@
           "adSubnetRange": {
             "value": "[parameters('adSubnetRange')]"
           },
-          "smsSubnetName": {
-            "value": "[parameters('smsSubnetName')]"
+          "smsSourceSubnetName": {
+            "value": "[parameters('smsSourceSubnetName')]"
           },
-          "smsSubnetRange": {
-            "value": "[parameters('smsSubnetRange')]"
+          "smsSourceSubnetRange": {
+            "value": "[parameters('smsSourceSubnetRange')]"
+          },
+          "smsDestinationSubnetName": {
+            "value": "[parameters('smsDestinationSubnetName')]"
+          },
+          "smsDestinationSubnetRange": {
+            "value": "[parameters('smsDestinationSubnetRange')]"
           },
           "dnsServerAddress": {
             "value": [
@@ -382,18 +402,32 @@
                 "description": "The address range of the domain controller subnet in the virtual network"
               }
             },
-            "smsSubnetName": {
+            "smsSourceSubnetName": {
               "type": "string",
-              "defaultValue": "sms-subnet",
+              "defaultValue": "sms-source-subnet",
               "metadata": {
-                "description": "The name of the domain member servers subnet in the virtual network"
+                "description": "The name of the first domain member servers subnet in the virtual network"
               }
             },
-            "smsSubnetRange": {
+            "smsSourceSubnetRange": {
               "type": "string",
               "defaultValue": "10.0.1.0/24",
               "metadata": {
-                "description": "The address range of the domain member servers subnet in the virtual network"
+                "description": "The address range of the first domain member servers subnet in the virtual network"
+              }
+            },
+            "smsDestinationSubnetName": {
+              "type": "string",
+              "defaultValue": "sms-destination-subnet",
+              "metadata": {
+                "description": "The name of the first domain member servers subnet in the virtual network"
+              }
+            },
+            "smsDestinationSubnetRange": {
+              "type": "string",
+              "defaultValue": "10.0.2.0/24",
+              "metadata": {
+                "description": "The address range of the first domain member servers subnet in the virtual network"
               }
             },
             "dnsServerAddress": {
@@ -432,9 +466,15 @@
                     }
                   },
                   {
-                    "name": "[parameters('smsSubnetName')]",
+                    "name": "[parameters('smsSourceSubnetName')]",
                     "properties": {
-                      "addressPrefix": "[parameters('smsSubnetRange')]"
+                      "addressPrefix": "[parameters('smsSourceSubnetRange')]"
+                    }
+                  },
+                  {
+                    "name": "[parameters('smsDestinationSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('smsDestinationSubnetRange')]"
                     }
                   }
                 ]
@@ -484,11 +524,17 @@
           "adSubnetRange": {
             "value": "[parameters('adSubnetRange')]"
           },
-          "smsSubnetName": {
-            "value": "[parameters('smsSubnetName')]"
+          "smsSourceSubnetName": {
+            "value": "[parameters('smsSourceSubnetName')]"
           },
-          "smsSubnetRange": {
-            "value": "[parameters('smsSubnetRange')]"
+          "smsSourceSubnetRange": {
+            "value": "[parameters('smsSourceSubnetRange')]"
+          },
+          "smsDestinationSubnetName": {
+            "value": "[parameters('smsDestinationSubnetName')]"
+          },
+          "smsDestinationSubnetRange": {
+            "value": "[parameters('smsDestinationSubnetRange')]"
           },
           "dnsServerAddress": {
             "value": [
@@ -642,21 +688,35 @@
               "type": "string",
               "defaultValue": "10.0.0.0/24",
               "metadata": {
-                "description": "VNet ad subnet prefix"
+                "description": "VNet AD subnet prefix"
               }
             },
-            "smsSubnetName": {
+            "smsSourceSubnetName": {
               "type": "string",
-              "defaultValue": "sms-subnet",
+              "defaultValue": "sms-source-subnet",
               "metadata": {
-                "description": "VNet subnet name"
+                "description": "VNet Storage Migration Service source subnet name"
               }
             },
-            "smsSubnetRange": {
+            "smsSourceSubnetRange": {
               "type": "string",
               "defaultValue": "10.0.1.0/24",
               "metadata": {
-                "description": "VNet subnet prefix"
+                "description": "VNet Storage Migration Service source subnet prefix"
+              }
+            },
+            "smsDestinationSubnetName": {
+              "type": "string",
+              "defaultValue": "sms-destination-subnet",
+              "metadata": {
+                "description": "VNet Storage Migration Service destination subnet name"
+              }
+            },
+            "smsDestinationSubnetRange": {
+              "type": "string",
+              "defaultValue": "10.0.2.0/24",
+              "metadata": {
+                "description": "VNet Storage Migration Service destination subnet prefix"
               }
             },
             "dnsServerAddress": {
@@ -683,7 +743,7 @@
           },
           "variables": {
             "vnetID": "[resourceId(parameters('virtualNetworkResourceGroup'), 'Microsoft.Network/virtualNetworks', parameters('virtualNetworkName'))]",
-            "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSubnetName'))]",
+            "subnetRef": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworkName'), parameters('smsSourceSubnetName'))]",
             "numberOfInstances": 2,
             "computeAPIVersion": "2022-08-01",
             "networkAPIVersion": "2022-07-01"
@@ -711,9 +771,15 @@
                     }
                   },
                   {
-                    "name": "[parameters('smsSubnetName')]",
+                    "name": "[parameters('smsSourceSubnetName')]",
                     "properties": {
-                      "addressPrefix": "[parameters('smsSubnetRange')]"
+                      "addressPrefix": "[parameters('smsSourceSubnetRange')]"
+                    }
+                  },
+                  {
+                    "name": "[parameters('smsDestinationSubnetName')]",
+                    "properties": {
+                      "addressPrefix": "[parameters('smsDestinationSubnetRange')]"
                     }
                   }
                 ]
