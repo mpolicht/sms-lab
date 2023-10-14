@@ -513,7 +513,7 @@
             "value": "[parameters('adminPassword')]"
           },
           "vmSize": {
-            "value: "[parameters('vmSize')]"
+            "value": "[parameters('vmSize')]"
           },
           "virtualNetworkName": {
             "value": "[parameters('virtualNetworkName')]"
